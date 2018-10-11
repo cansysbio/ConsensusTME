@@ -28,4 +28,4 @@ A package for Consensus<sup>TME</sup> is currently in development
 
 A manuscript is currently under consideration for publication, to cite currently please refer to the bioRxiv preprint:
 
-https://www.biorxiv.org/content/early/2018/10/08/437533
+https://www.biorxiv.org/content/early/2018/10/11/437533
