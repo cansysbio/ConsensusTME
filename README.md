@@ -21,3 +21,5 @@ A package for Consensus<sup>TME</sup> is currently in development
 -It is important to note that results generated in this way will provide quantification of cell types that are relative across samples rather than across cell types.
 
 -Consensus<sup>TME</sup> gene sets have been made to be cancer specific, if analysis is aimed at healthy tissue or PBMCs better results may be obtained by using the unspecific gene sets
+
+-Consensus gene sets can be generated manually through cloning of respository N.B. Paths within functions will need to be updated.
