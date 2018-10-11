@@ -23,3 +23,9 @@ A package for Consensus<sup>TME</sup> is currently in development
 -Consensus<sup>TME</sup> gene sets have been made to be cancer specific, if analysis is aimed at healthy tissue or PBMCs better results may be obtained by using the unspecific gene sets
 
 -Consensus gene sets can be generated manually through cloning of respository N.B. Paths within functions will need to be updated.
+
+# Publication
+
+A manuscript is currently under consideration for publication, to cite currently please refer to the bioRxiv preprint:
+
+https://www.biorxiv.org/content/early/2018/10/08/437533
