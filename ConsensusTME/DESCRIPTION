@@ -1,0 +1,22 @@
+Package: ConsensusTME
+Type: Package
+Title: A Consensus Approach To Tumour Microenvironment Cell Estimation
+Version: 0.0.0.9000
+Author: c(person("Oliver","Cast", email = "Oliver.Cast@cruk.cam.ac.uk", 
+    role = c("aut","cre")), 
+          person("Alejndro","JimenezSanchez",
+          email = "Alejandro.JimenezSanchez@cruk.cam.ac.uk", role = c("aut")))
+Maintainer: Oliver Cast <Oliver.Cast@cruk.cam.ac.uk>
+Description: ConsensusTME is a consensus based approach to generating cancer
+specific gene sets for multiple 
+    cell types found within the tumour microenvironment. This package allows
+    both generation and access to these genesets but also provides a wrapper
+    for using these gene sets within the ssGSEA statistical framework to
+    generate normalised enrichment scores. These can be used to identify
+    relative quantities of the different cell types across multiple samples.
+    This requires a bulk tumour gene expression profile as an input.
+Depends: (R >= 3.5.0)
+License: GNU General Public License v3.0
+BugReports: https://github.com/cansysbio/ConsensusTME/issues
+Encoding: UTF-8
+LazyData: true
