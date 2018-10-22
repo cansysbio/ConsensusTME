@@ -1,45 +1,45 @@
 createMethodGenesList <- function(saveRdata = FALSE, path.save = '.'){
 # Creates the methods genes list containing the gene sets
 # for each method.
-# 
-# Args: 
+#
+# Args:
 #  saveRdata: If True, the method genes list will be saved as an RData file (in working directory by default)
 #  path.save: When Save == TRUE a path can be specified to save the methods RData file to
 #
 # Returns:
 #   Returns a list containing the genes extracted from each of the methods
-  
+
   require(reshape2)
   require(plyr)
-  
+
   source('~/Documents/R/useful_functions.R')
 
   # Path for method data
   path.load = '~/Documents/ConsensusTME_Work/Consensus_Git/ConsensusTME/Source_Code/data/Method_genes/'
-  
+
   #### Read all method genes in a lists ####
-  
+
   # Bindea Gene Sets
   bindea.list <- as.list(read.table(sprintf('%s/Bindea_genes.txt',path.load),
                                     sep = '\t', header = T, stringsAsFactors = F))
-  
+
   # Davoli Gene Sets
   davoli.list <- as.list(read.table(sprintf('%s/Davoli_genes.txt',path.load),
                                sep = '\t', header = T, stringsAsFactors = F))
-  
+
   # MCP-Counter Gene Sets
   mcp <- read.table(sprintf('%s/MCP_genes.txt',path.load),
                     sep = '\t', header = T, stringsAsFactors = F)
   mcp <- mcp[ ,colnames(mcp)!='ENTREZID']
   mcp$ind <- with(mcp, ave(seq_along(Cell.population), Cell.population, FUN=seq_along))
   mcp.list <- as.list(dcast(mcp, ind ~ Cell.population, value.var = 'HUGO.symbols',fill = '')[ ,-1])
-  
+
   # xCell Gene Sets
   xcell.list <- as.list(read.table(sprintf('%s/xCell_genes.txt',path.load),
                                    sep = '\t', header = T, stringsAsFactors = F))
   names(xcell.list) <- sapply(strsplit(names(xcell.list),'_'), function(x) x [[1]])
   xcell.list <- mergeDups(xcell.list)
-  
+
   # CIBERSORT Gene Sets From LM22
   # Genes with Z-Score > 1.96 are selected
   cibersort <- read.table(sprintf('%s/CIBERSORT_LM22.txt',path.load),
@@ -52,13 +52,17 @@ createMethodGenesList <- function(saveRdata = FALSE, path.save = '.'){
     cibersort.list[[i]]<- tmp.genes
   }
   names(cibersort.list) <- colnames(cib.zscores)
-  
+
   # TIMER Gene Sets With Negative Purity Correlation  (All Cancers)
   timer.all <- read.table(sprintf('%s/TIMER_genes.txt',path.load),
-                          sep = '\t', header = T, stringsAsFactors = F) 
-  
+                          sep = '\t', header = T, stringsAsFactors = F)
+
+  # ESTIMATE Gene Sets With Negative Purity Correlation (All Cancers)
+  estimate.all <- read.table(sprintf('%s/ESTIMATE_stromal_genes.txt',path.load),
+                              sep = '\t', header = T, stringsAsFactors = F)
+
   #### Ensure Consistant Nomenclature For Cell Types ####
-  
+
   # Bindea
   bindea.prep <- list()
   bindea.prep$B_cells <- bindea.list$B_cells
@@ -74,12 +78,12 @@ createMethodGenesList <- function(saveRdata = FALSE, path.save = '.'){
   bindea.prep$T_cells_CD8 <- bindea.list$CD8_T_cells
   bindea.prep$T_cells_gamma_delta <- bindea.list$T_gamma_delta_cells
   bindea.prep$T_regulatory_cells <- bindea.list$Treg_cells
-  
+
   bindea.prep <- removeBlanks(bindea.prep)
   bindea.prep <- lapply(bindea.prep, unique)
-  
+
   # Davoli
-  
+
   davoli.prep <- list()
   davoli.prep$B_cells <- davoli.list$B_cells
   davoli.prep$Dendritic_cells <- davoli.list$Dendritics
@@ -89,13 +93,13 @@ createMethodGenesList <- function(saveRdata = FALSE, path.save = '.'){
   davoli.prep$NK_cells <- c(davoli.list$NK_cells, davoli.list$CD8_effector_NK_cells)
   davoli.prep$T_cells_CD4 <- davoli.list$CD4_mature
   davoli.prep$T_cells_CD8 <- davoli.list$CD8_effector
-  davoli.prep$T_regulatory_cells <- davoli.list$T_regs  
-  
+  davoli.prep$T_regulatory_cells <- davoli.list$T_regs
+
   davoli.prep <- removeBlanks(davoli.prep)
   davoli.prep <- lapply(davoli.prep, unique)
-  
+
   # MCP-Counter
-  
+
   mcp.prep <- list()
   mcp.prep$B_cells <- mcp.list$`B lineage`
   mcp.prep$Cytotoxic_cells <- mcp.list$`Cytotoxic lymphocytes`
@@ -105,12 +109,12 @@ createMethodGenesList <- function(saveRdata = FALSE, path.save = '.'){
   mcp.prep$NK_cells <- mcp.list$`NK cells`
   mcp.prep$Neutrophils <- mcp.list$Neutrophils
   mcp.prep$T_cells_CD8 <- mcp.list$`CD8 T cells`
-  
+
   mcp.prep <- removeBlanks(mcp.prep)
   mcp.prep <- lapply(mcp.prep, unique)
-  
+
   # xCell
-  
+
   xcell.prep <- list()
   xcell.prep$B_cells <- c(xcell.list$B.cells, xcell.list$Class.switched.memory.B.cells,
                           xcell.list$Memory.B.cells, xcell.list$naive.B.cells, xcell.list$pro.B.cells)
@@ -133,14 +137,14 @@ createMethodGenesList <- function(saveRdata = FALSE, path.save = '.'){
                               xcell.list$CD8..naive.T.cells)
   xcell.prep$T_cells_gamma_delta <- xcell.list$Tgd.cells
   xcell.prep$T_regulatory_cells <- xcell.list$Tregs
-  
+
   xcell.prep <- removeBlanks(xcell.prep)
   xcell.prep <- lapply(xcell.prep, unique)
-  
+
   # CIBERSORT
-  
+
   cibersort.prep <- list()
-  cibersort.prep$B_cells <- c(cibersort.list$B.cells.memory, cibersort.list$B.cells.naive) 
+  cibersort.prep$B_cells <- c(cibersort.list$B.cells.memory, cibersort.list$B.cells.naive)
   cibersort.prep$Dendritic_cells <- c(cibersort.list$Dendritic.cells.activated, cibersort.list$Dendritic.cells.resting)
   cibersort.prep$Eosinophils <- cibersort.list$Eosinophils
   cibersort.prep$Macrophages <- cibersort.list$Macrophages.M0
@@ -156,20 +160,21 @@ createMethodGenesList <- function(saveRdata = FALSE, path.save = '.'){
   cibersort.prep$T_cells_CD8 <- cibersort.list$T.cells.CD8
   cibersort.prep$T_cells_gamma_delta <- cibersort.list$T.cells.gamma.delta
   cibersort.prep$T_regulatory_cells <- cibersort.list$T.cells.regulatory..Tregs.
-  
+
   cibersort.prep <- removeBlanks(cibersort.prep)
   cibersort.prep <- lapply(cibersort.prep, unique)
-  
+
   #### Create Method Data Object ####
-  
+
   method.genes <- list()
   method.genes$Bindea <- bindea.prep
   method.genes$CIBERSORT <- cibersort.prep
   method.genes$Davoli <- davoli.prep
   method.genes$MCP.Counter <- mcp.prep
   method.genes$xCell <- xcell.prep
-  method.genes$TIMER <- timer.all 
-  
+  method.genes$TIMER <- timer.all
+  method.genes$ESTIMATE <- estimate.all
+
   #### Save Method Data Object ####
   if(saveRdata){
     save(method.genes, file = sprintf('%s/Method_data.RData', path.save))
