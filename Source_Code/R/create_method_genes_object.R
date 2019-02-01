@@ -1,11 +1,12 @@
-createMethodGenesList <- function(saveRdata = FALSE, path.save = '.'){
+createMethodGenesList <- function(saveRdata = FALSE, path.save = '.', outputRawGenes = FALSE){
 # Creates the methods genes list containing the gene sets
 # for each method.
 #
 # Args:
 #  saveRdata: If True, the method genes list will be saved as an RData file (in working directory by default)
 #  path.save: When Save == TRUE a path can be specified to save the methods RData file to
-#
+#  outputRawGenes: When TRUE will output an Rdata object containing the raw gene sets from each method
+#  
 # Returns:
 #   Returns a list containing the genes extracted from each of the methods
 
@@ -23,6 +24,10 @@ createMethodGenesList <- function(saveRdata = FALSE, path.save = '.'){
   bindea.list <- as.list(read.table(sprintf('%s/Bindea_genes.txt',path.load),
                                     sep = '\t', header = T, stringsAsFactors = F))
 
+  # Danaher Gene Sets
+  danaher.list <- as.list(read.table(sprintf('%s/Danaher_genes.txt',path.load),
+                                     sep = '\t', header = T, stringsAsFactors = F))
+  
   # Davoli Gene Sets
   davoli.list <- as.list(read.table(sprintf('%s/Davoli_genes.txt',path.load),
                                sep = '\t', header = T, stringsAsFactors = F))
@@ -61,6 +66,22 @@ createMethodGenesList <- function(saveRdata = FALSE, path.save = '.'){
   estimate.all <- read.table(sprintf('%s/ESTIMATE_stromal_genes.txt',path.load),
                               sep = '\t', header = T, stringsAsFactors = F)
 
+  #### Create Object with Raw Gene Sets ####
+  
+  raw.genes <- list()
+  raw.genes$Bindea <- bindea.list
+  raw.genes$CIBERSORT <- cibersort.list
+  raw.genes$Davoli <- davoli.list
+  raw.genes$Danaher <- danaher.list
+  raw.genes$MCP.Counter <- mcp.list
+  raw.genes$xCell <- xcell.list
+  raw.genes$TIMER <- timer.all
+  raw.genes$ESTIMATE <- estimate.all
+  
+  if(outputRawGenes){
+    save(raw.genes, file = sprintf('%s/Raw_Gene_List.RData', path.save))
+  }
+  
   #### Ensure Consistant Nomenclature For Cell Types ####
 
   # Bindea
@@ -82,6 +103,23 @@ createMethodGenesList <- function(saveRdata = FALSE, path.save = '.'){
   bindea.prep <- removeBlanks(bindea.prep)
   bindea.prep <- lapply(bindea.prep, unique)
 
+  # Danaher
+  
+  danaher.prep <- list()
+  danaher.prep$B_cells <- danaher.list$B.cells
+  danaher.prep$Cytotoxic_cells <- danaher.list$Cytotoxic.cells
+  danaher.prep$Dendritic_cells <- danaher.list$DC
+  danaher.prep$Macrophages <- danaher.list$Macrophages
+  danaher.prep$Mast_cells <- danaher.list$Mast.cells
+  danaher.prep$Neutrophils <- danaher.list$Neutrophils
+  danaher.prep$NK_cells <- c(danaher.list$NK.CD56dim.cells, danaher.list$NK.cells)
+  danaher.prep$T_cells_CD4 <- danaher.list$Th1.cells
+  danaher.prep$T_cells_CD8 <- c(danaher.list$CD8.T.cells, danaher.list$Exhausted.CD8)
+  danaher.prep$T_regulatory_cells <- danaher.list$Treg
+  
+  danaher.prep <- removeBlanks(danaher.prep)
+  danaher.prep <- lapply(danaher.prep, unique)
+  
   # Davoli
 
   davoli.prep <- list()
@@ -170,6 +208,7 @@ createMethodGenesList <- function(saveRdata = FALSE, path.save = '.'){
   method.genes$Bindea <- bindea.prep
   method.genes$CIBERSORT <- cibersort.prep
   method.genes$Davoli <- davoli.prep
+  method.genes$Danaher <- danaher.prep
   method.genes$MCP.Counter <- mcp.prep
   method.genes$xCell <- xcell.prep
   method.genes$TIMER <- timer.all

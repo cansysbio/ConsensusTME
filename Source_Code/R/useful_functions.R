@@ -45,22 +45,41 @@ mergeDups <- function(list.in, removenames = TRUE) {
   }
 }
 
-thisFile <- function() {
-# Function from SO that allows a path for the script to reference itself
+longToWide <- function(df.in, cellcol = NULL,  genecol = NULL) {
+# From a dataframe with genes in one column and cell types in another create a
+# dataframe with cell names as columns and genes underneath
 #
-# Args: N/A
+# Args:
+#  df.in: List containing two (or more columns), NB: Requires stringsAsFactors = T
+#  cellcol: column name containing cell names (default 1st)
+#  genecol: column name containing genes (default 2nd)
 #
 # Returns:
-#  The path that the function script is in allowing reference to other datasets 
-
-  cmdArgs <- commandArgs(trailingOnly = FALSE)
-  needle <- "--file="
-  match <- grep(needle, cmdArgs)
-  if (length(match) > 0) {
-    # Rscript
-    return(normalizePath(sub(needle, "", cmdArgs[match])))
+#  A dataframe containing the cell types as columns with genes beneath
+  require(data.table)
+  require(reshape2)
+  
+  if (ncol(df.in) > 2) {
+    if (is.null(cellcol) | is.null(genecol)) {
+      stop('More than two columns have been inputted without specifying
+           which columns contain the genes and celltypes')
+    } else if (is.numeric(c(cellcol, genecol))){
+      cellcol = colnames(df.in)[cellcol]
+      genecol = colnames(df.in)[genecol]
+    }
+    if (!(cellcol %in% colnames(df.in)) | !(genecol %in% colnames(df.in))){
+      stop('Index or Name of Column Not in Inputted Dataframe')
+    } 
+    tmp.df <- df.in[ ,c(cellcol, genecol)]
+  } else if (ncol(df.in) == 2) {
+    tmp.df <- df.in
   } else {
-    # 'source'd via R console
-    return(normalizePath(sys.frames()[[1]]$ofile))
+    stop('Error with Input Dataframe')
   }
+  
+  colnames(tmp.df) <- c('cell','gene')
+  tmp.df$ind <- with(tmp.df, ave(seq_along(cell), cell, FUN = seq_along))
+  new.df <- dcast(tmp.df, ind~cell, value.var = 'gene', fill = '')[ ,-1]
+  new.df[is.na(new.df)] = ''
+  return(new.df)
 }
