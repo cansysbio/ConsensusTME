@@ -13,7 +13,7 @@ createSignatures <- function(saveRdata = F, saveTxt = F, path.save.sigs = '.' ){
   #   Returns a list containing cell-type specific gene lists for each cancer type along with a non-specific list of genes
   #   that has not been filtered using tumour purity
 
-  source('~/Documents/ConsensusTME_Work/Consensus_Git/ConsensusTME/Source_Code/R/create_method_genes_object.R')
+  source('~/Documents/CRUK/Deconvolution/ConsensusTME/Consensus_Git/ConsensusTME/Source_Code/R/create_method_genes_object.R')
 
   #### Create Cancer Specific Consensus Gene List ####
 
@@ -24,11 +24,11 @@ createSignatures <- function(saveRdata = F, saveTxt = F, path.save.sigs = '.' ){
   # Create Consensus List Of Genes
 
   consensus.all <- vector('list', 18)
-  cell.types <- unique(unlist(lapply(method.genes[!(names(method.genes) %in% c('TIMER','ESTIMATE'))], names)))
+  cell.types <- unique(unlist(lapply(method.genes[!(names(method.genes) == 'Purity')], names)))
   names(consensus.all) <- cell.types
 
   for (cell in cell.types) {
-    consensus.all[[cell]] <- unique(unlist(lapply(method.genes[!(names(method.genes) %in% c('TIMER','ESTIMATE'))]
+    consensus.all[[cell]] <- unique(unlist(lapply(method.genes[!(names(method.genes) == 'Purity')]
                                                   ,function(x) x[names(x) == cell])))
   }
 
@@ -36,29 +36,21 @@ createSignatures <- function(saveRdata = F, saveTxt = F, path.save.sigs = '.' ){
 
   # Filter Genes To Only Include Genes With Negative Purity Correlation For Each Cancer Type
 
-  timer.all <- method.genes$TIMER
-  estimate.all <- method.genes$ESTIMATE
-  cancer.types <- unique(timer.all[ ,'Disease.Name'])
+  pur.all <- method.genes$Purity
+  cancer.types <- unique(pur.all[ ,'Cancer'])
   cancer.types <- c(cancer.types, 'Unspecific')
-  stromal.cells <- c('Endothelial','Fibroblasts')
-
   consensus.cancer <- setNames(vector('list',33), cancer.types)
 
   for (canc in cancer.types){
-     immune.genes <- timer.all[timer.all$Disease.Name == canc, 1]
-     stromal.genes <- estimate.all[estimate.all$Cancer == canc, 1]
+     purity.genes <- pur.all[pur.all$Cancer == canc, 1]
      if (canc == 'Unspecific') {
        cancer.sig <- consensus.all
      } else {
        cancer.sig <- setNames(vector('list', 18), cell.types)
        for(cells in cell.types){
-         if(cells %in% stromal.cells){
-           cancer.sig[[cells]] <- intersect(consensus.all[[cells]], stromal.genes)
-         } else {
-           cancer.sig[[cells]] <- intersect(consensus.all[[cells]], immune.genes)
+           cancer.sig[[cells]] <- intersect(consensus.all[[cells]], purity.genes)
          }
        }
-     }
      consensus.cancer[[canc]] <- cancer.sig
      if (saveTxt) {
        sig.df <- t(ldply(cancer.sig, rbind))
@@ -72,7 +64,7 @@ createSignatures <- function(saveRdata = F, saveTxt = F, path.save.sigs = '.' ){
      }
   }
 
-  # Save Gene Lists
+    # Save Gene Lists
 
   if (saveRdata) {
     save(consensus.cancer, file = sprintf('%s/ConsensusTME_GeneSets.RData', path.save.sigs))

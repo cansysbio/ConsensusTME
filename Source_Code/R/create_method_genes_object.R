@@ -13,10 +13,10 @@ createMethodGenesList <- function(saveRdata = FALSE, path.save = '.', outputRawG
   require(reshape2)
   require(plyr)
 
-  source('~/Documents/R/useful_functions.R')
+  source('~/Documents/CRUK/Code_Snippets/R/useful_functions.R')
 
   # Path for method data
-  path.load = '~/Documents/ConsensusTME_Work/Consensus_Git/ConsensusTME/Source_Code/data/Method_genes/'
+  path.load = '~/Documents/CRUK/Deconvolution/ConsensusTME/Consensus_Git/ConsensusTME/Source_Code/data/Method_genes/'
 
   #### Read all method genes in a lists ####
 
@@ -40,14 +40,14 @@ createMethodGenesList <- function(saveRdata = FALSE, path.save = '.', outputRawG
   mcp.list <- as.list(dcast(mcp, ind ~ Cell.population, value.var = 'HUGO.symbols',fill = '')[ ,-1])
 
   # xCell Gene Sets
-  xcell.list <- as.list(read.table(sprintf('%s/xCell_genes.txt',path.load),
+  xcell.list <- as.list(read.table(sprintf('%s/xCell_genes.txt', path.load),
                                    sep = '\t', header = T, stringsAsFactors = F))
   names(xcell.list) <- sapply(strsplit(names(xcell.list),'_'), function(x) x [[1]])
   xcell.list <- mergeDups(xcell.list)
 
   # CIBERSORT Gene Sets From LM22
   # Genes with Z-Score > 1.96 are selected
-  cibersort <- read.table(sprintf('%s/CIBERSORT_LM22.txt',path.load),
+  cibersort <- read.table(sprintf('%s/CIBERSORT_LM22.txt', path.load),
                            sep = '\t', header = T, row.names = 'Gene.symbol')
   cib.zscores <- apply(cibersort, 2, function(x) scale(x, center = TRUE, scale = TRUE))
   row.names(cib.zscores) <- row.names(cibersort)
@@ -58,13 +58,11 @@ createMethodGenesList <- function(saveRdata = FALSE, path.save = '.', outputRawG
   }
   names(cibersort.list) <- colnames(cib.zscores)
 
-  # TIMER Gene Sets With Negative Purity Correlation  (All Cancers)
-  timer.all <- read.table(sprintf('%s/TIMER_genes.txt',path.load),
+  # Genes with Negative Correlation with Purity (ABSOLUTE) in TCGA (All Cancers)
+  
+  pur.genes <- read.table(sprintf('%s/Purity_Genes.txt', path.load),
                           sep = '\t', header = T, stringsAsFactors = F)
-
-  # ESTIMATE Gene Sets With Negative Purity Correlation (All Cancers)
-  estimate.all <- read.table(sprintf('%s/ESTIMATE_stromal_genes.txt',path.load),
-                              sep = '\t', header = T, stringsAsFactors = F)
+  
 
   #### Create Object with Raw Gene Sets ####
   
@@ -75,8 +73,7 @@ createMethodGenesList <- function(saveRdata = FALSE, path.save = '.', outputRawG
   raw.genes$Danaher <- danaher.list
   raw.genes$MCP.Counter <- mcp.list
   raw.genes$xCell <- xcell.list
-  raw.genes$TIMER <- timer.all
-  raw.genes$ESTIMATE <- estimate.all
+  raw.genes$Purity <- pur.genes
   
   if(outputRawGenes){
     save(raw.genes, file = sprintf('%s/Raw_Gene_List.RData', path.save))
@@ -211,8 +208,7 @@ createMethodGenesList <- function(saveRdata = FALSE, path.save = '.', outputRawG
   method.genes$Danaher <- danaher.prep
   method.genes$MCP.Counter <- mcp.prep
   method.genes$xCell <- xcell.prep
-  method.genes$TIMER <- timer.all
-  method.genes$ESTIMATE <- estimate.all
+  method.genes$Purity <- pur.genes
 
   #### Save Method Data Object ####
   if(saveRdata){
