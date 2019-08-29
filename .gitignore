@@ -5,3 +5,6 @@
 *.Rproj
 *.DS_Store
 */.DS_Store
+Source_Code/R/.DS_Store
+Source_Code/data/.DS_Store
+Source_Code/data/Method_genes/.DS_Store

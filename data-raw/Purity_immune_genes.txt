@@ -1,4 +1,4 @@
-"Gene Symbol"	"Disease Name"
+"Gene_Symbol"	"Cancer"
 "ACAP1"	"ACC"
 "ADAP2"	"ACC"
 "ADCY7"	"ACC"

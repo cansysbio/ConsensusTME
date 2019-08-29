@@ -17,6 +17,7 @@ removeBlanks <- function(list.in) {
     return(list.out)
   } else {
     sprintf('%s is not a class this function can use', class(list.in))
+    return(list.in)
   }
 }
 
@@ -42,25 +43,5 @@ mergeDups <- function(list.in, removenames = TRUE) {
     return (list.merged)
   } else {
     sprintf('%s is not a class this function can currently use',class(list.in))
-  }
-}
-
-thisFile <- function() {
-# Function from SO that allows a path for the script to reference itself
-#
-# Args: N/A
-#
-# Returns:
-#  The path that the function script is in allowing reference to other datasets 
-
-  cmdArgs <- commandArgs(trailingOnly = FALSE)
-  needle <- "--file="
-  match <- grep(needle, cmdArgs)
-  if (length(match) > 0) {
-    # Rscript
-    return(normalizePath(sub(needle, "", cmdArgs[match])))
-  } else {
-    # 'source'd via R console
-    return(normalizePath(sys.frames()[[1]]$ofile))
   }
 }
