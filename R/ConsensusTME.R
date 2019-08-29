@@ -26,6 +26,7 @@ NULL
 #'   \item{ESTIMATE}{Dataframe with ESTIMATES stromal genes that have a negative correlation
 #'   with tumour purity for each cancer type}
 #' }
+#' @export
 "methodSignatures"
 
 #' Run ConsensusTME Cell Type Estimation
@@ -34,12 +35,13 @@ NULL
 #'
 #' @param bulkExp bulk tumour gene expression matrix. HUGO gene symbols as row names & sample IDs
 #' as column names.
-#' @param cancerType string passed to indicate which cancer type samples are to allow appropriate gene
-#' set to be used. \bold{N.B} samples of different cancer types should be run seperately.
+#' @param cancerType string passed to indicate which TCGA cancer type samples are most similar to. \bold{N.B} samples of different cancer types should be run seperately.
+#' Available cancer types: \code{"ACC", "BLCA", "BRCA", "CESC", "CHOL", "COAD", "DLBC", "ESCA", "GBM", "HNSC", "KICH", "KIRC", "KIRP","LGG", "LIHC", "LUAD", "LUSC", "MESO",
+#' "OV", "PAAD", "PCPG", "PRAD", "READ", "SARC", "SKCM", "STAD", "TGCT", "THCA", "THYM", "UCEC", "UCS", "UVM"}.
 #' @param statMethod statistical framework to be used in generating gene set enrichment scores.
 #' These mirror the parameter options of \code{GSVA::gsva()} with the exception of \code{singScore}.
 #' which leverages \code{singscore::multiScore()}. Default: \code{ssgsea}
-#' @param singScoreDisp Logical, when using singscore method should the dispersion for each
+#' @param singScoreDisp logical, when using singscore method should the dispersion for each
 #' gene set be returned with the enrichment scores. Default: \code{FALSE}
 #' @param immuneScore logical, when \code{TRUE} (default) an Immune Score is produced representing overall
 #' level of immune infiltration for each sample.
@@ -52,6 +54,7 @@ NULL
 #' \code{"FORK"} -  faster but should be only used for POSIX systems (Mac, Linux, Unix, BSD).
 #'
 #' @return returns estimation of cell type abundance for each sample in the bulk tumour gene expression matrix
+#' @export
 
 consensusTMEAnalysis <- function(bulkExp, cancerType, statMethod = c("ssgsea", "gsva", "plage","zscore", "singScore"),
                          singScoreDisp = FALSE, immuneScore = TRUE, excludeCells = NULL,
@@ -127,6 +130,7 @@ consensusTMEAnalysis <- function(bulkExp, cancerType, statMethod = c("ssgsea", "
 #' \code{"FORK"} -  faster but should be only used for POSIX systems (Mac, Linux, Unix, BSD).
 #'
 #' @return returns a list with curated signatures ready to be combined
+#' @export
 
 
 geneSetEnrichment <- function(bulkExp, signatures, statMethod = c("ssgsea", "gsva", "plage", "zscore", "singScore"), singScoreDisp = FALSE,
@@ -191,6 +195,7 @@ geneSetEnrichment <- function(bulkExp, signatures, statMethod = c("ssgsea", "gsv
 #' level of immune infiltration for each sample.
 #'
 #' @return returns consensusGeneSets
+#' @export
 
 buildConsensusGenes <- function(matchedSigs, cancerAll, immuneFilter = NULL, stromalFilter = NULL, immuneScore = TRUE) {
 
@@ -256,6 +261,7 @@ buildConsensusGenes <- function(matchedSigs, cancerAll, immuneFilter = NULL, str
 #' @param methodSignatures raw gene signatures list generated from methodSignatures.R
 #'
 #' @return returns a list with curated signatures ready to be combined
+#' @export
 
 
 matchGeneSigs <- function(methodSignatures) {

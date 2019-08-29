@@ -15,14 +15,15 @@ consensusTMEAnalysis(bulkExp, cancerType, statMethod = c("ssgsea",
 \item{bulkExp}{bulk tumour gene expression matrix. HUGO gene symbols as row names & sample IDs
 as column names.}
 
-\item{cancerType}{string passed to indicate which cancer type samples are to allow appropriate gene
-set to be used. \bold{N.B} samples of different cancer types should be run seperately.}
+\item{cancerType}{string passed to indicate which TCGA cancer type samples are most similar to. \bold{N.B} samples of different cancer types should be run seperately.
+Available cancer types: \code{"ACC", "BLCA", "BRCA", "CESC", "CHOL", "COAD", "DLBC", "ESCA", "GBM", "HNSC", "KICH", "KIRC", "KIRP","LGG", "LIHC", "LUAD", "LUSC", "MESO",
+"OV", "PAAD", "PCPG", "PRAD", "READ", "SARC", "SKCM", "STAD", "TGCT", "THCA", "THYM", "UCEC", "UCS", "UVM"}.}
 
 \item{statMethod}{statistical framework to be used in generating gene set enrichment scores.
 These mirror the parameter options of \code{GSVA::gsva()} with the exception of \code{singScore}.
 which leverages \code{singscore::multiScore()}. Default: \code{ssgsea}}
 
-\item{singScoreDisp}{Logical, when using singscore method should the dispersion for each
+\item{singScoreDisp}{logical, when using singscore method should the dispersion for each
 gene set be returned with the enrichment scores. Default: \code{FALSE}}
 
 \item{immuneScore}{logical, when \code{TRUE} (default) an Immune Score is produced representing overall
