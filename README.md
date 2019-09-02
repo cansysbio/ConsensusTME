@@ -6,7 +6,7 @@ The `ConsensusTME` package provides a integrative tool for `R` that uses a conse
 These consensus gene sets are then used within a ssGSEA framework to provide normalised enrichment scores for each of the cell types representing the relative abundance of cell types across multiple samples.
 
 <p align="center">
-  <img src="https://github.com/cansysbio/ConsensusTME/blob/master/Overview.png" width="520" height="412"></div>
+  <img src="https://github.com/cansysbio/ConsensusTME/blob/master/Overview.png" width="760" height="412"></div>
 </p>
 
 # Installation
