@@ -29,6 +29,20 @@ NULL
 #' @export
 "methodSignatures"
 
+#' Consensus TME Cancer Types
+#'
+#' TCGA cancer types for which ConsensusTME can generate gene sets for:
+#'
+#' ACC BLCA BRCA CESC CHOL COAD DLBC ESCA GBM HNSC KICH KIRC KIRP LGG LIHC LUAD LUSC MESO OV PAAD PCPG PRAD READ SARC SKCM STAD TGCT THCA THYM UCEC UCS UVM.
+#' @docType data
+#'
+#' @usage data(cancerAll)
+#'
+#' @description character vector containing TCGA abbreviations
+#'
+#' @export
+"cancerAll"
+
 #' Run ConsensusTME Cell Type Estimation
 #' \code{consensusTMEAnalysis} takes bulk tumour gene expression data and returns
 #' cell type specific enrichment scores for each sample
@@ -60,10 +74,6 @@ consensusTMEAnalysis <- function(bulkExp, cancerType, statMethod = c("ssgsea", "
                          singScoreDisp = FALSE, immuneScore = TRUE, excludeCells = NULL,
                          parallel.sz = 0, parallel.type = "SOCK") {
 
-  cancerAll = c("ACC", "BLCA", "BRCA", "CESC", "CHOL", "COAD", "DLBC", "ESCA", "GBM", "HNSC", "KICH",
-                  "KIRC", "KIRP","LGG", "LIHC", "LUAD", "LUSC", "MESO", "OV", "PAAD", "PCPG", "PRAD",
-                  "READ", "SARC", "SKCM", "STAD", "TGCT", "THCA", "THYM", "UCEC", "UCS", "UVM")
-
   cancerType <- match.arg(cancerType, c(cancerAll, "Unfiltered"))
   statMethod <- match.arg(statMethod)
   sampleSize <- dim(bulkExp)[2]
@@ -75,7 +85,7 @@ consensusTMEAnalysis <- function(bulkExp, cancerType, statMethod = c("ssgsea", "
   purityGenes <- methodSignatures$ImmuneGenes
   estimateGenes <- methodSignatures$ESTIMATE
 
-  consensusGenesAll <- buildConsensusGenes(matchedSigs = matchedSigs, cancerAll = cancerAll,
+  consensusGenesAll <- buildConsensusGenes(matchedSigs = matchedSigs, consCancerType = cancerType,
                                            immuneFilter = purityGenes, stromalFilter = estimateGenes)
 
   consensusGenes <- consensusGenesAll[[cancerType]]
@@ -184,7 +194,7 @@ geneSetEnrichment <- function(bulkExp, signatures, statMethod = c("ssgsea", "gsv
 #' \code{buildConsensusGenes} Combines pre-processed signatures and filters to create curated gene sets.
 #'
 #' @param matchedSigs list of pre-processed signatures with consistant cell type nomenclature
-#' @param cancerAll TCGA cancer types to produce gene sets for
+#' @param consCancerType TCGA cancer types to produce gene sets for if no cancer type is specified Default: All TCGA cancer types.
 #' @param immuneFilter list of genes to filter immune gene sets by. If \code{NULL} - \code{methodSignatures$ImmuneGenes}
 #' is used (list of immune genes with negative correlation with tumour purity for each tcga cancer type).
 #' \bold{N.B.} Must have two columns: "Gene_Symbol" & "Cancer".
@@ -193,11 +203,16 @@ geneSetEnrichment <- function(bulkExp, signatures, statMethod = c("ssgsea", "gsv
 #' \bold{N.B.} Must have two columns: "Gene_Symbol" & "Cancer".
 #' @param immuneScore logical, when \code{TRUE} (default) an Immune Score is produced representing overall
 #' level of immune infiltration for each sample.
+#' @param unfilteredGeneSet logical, include geneset without cancer specific filtering. If left empty & more than one cancer type has been
+#' specified defaults to \code{TRUE} otherwise defaults to \code{FALSE}.
 #'
 #' @return returns consensusGeneSets
 #' @export
 
-buildConsensusGenes <- function(matchedSigs, cancerAll, immuneFilter = NULL, stromalFilter = NULL, immuneScore = TRUE) {
+buildConsensusGenes <- function(matchedSigs, consCancerType = cancerAll, immuneFilter = NULL, stromalFilter = NULL, immuneScore = TRUE,
+                                unfilteredGeneSet = NULL) {
+
+  consCancerType <- match.arg(consCancerType, cancerAll, several.ok = TRUE)
 
   if (is.null(immuneFilter)) {
     immuneFilter <- methodSignatures$ImmuneGenes
@@ -222,7 +237,7 @@ buildConsensusGenes <- function(matchedSigs, cancerAll, immuneFilter = NULL, str
   stromalCells <- c("Endothelial", "Fibroblasts")
   immuneCells <- cellTypes[!cellTypes %in% stromalCells]
 
-  consensusGenes <- lapply(cancerAll, function(canc) {
+  consensusGenes <- lapply(consCancerType, function(canc) {
     immuneGenes <- immuneFilter[immuneFilter$Cancer == canc, 1]
     stromalGenes <- stromalFilter[stromalFilter$Cancer == canc, 1]
     filteredSigs <- lapply(cellTypes, function(cell){
@@ -244,11 +259,17 @@ buildConsensusGenes <- function(matchedSigs, cancerAll, immuneFilter = NULL, str
     return(filteredSigs)
   })
 
-  names(consensusGenes) <- cancerAll
+  names(consensusGenes) <- consCancerType
 
-  # Add Unfiltered Set of Genes
+  # Add Unfiltered Set of Genes If Required
 
-  consensusGenes$Unfiltered <- consensusAll
+  if (is.null(unfilteredGeneSet)) {
+    unfilteredGeneSet <- length(consCancerType) > 1
+  }
+
+  if (unfilteredGeneSet) {
+    consensusGenes$Unfiltered <- consensusAll
+  }
 
   return(consensusGenes)
 
@@ -256,7 +277,7 @@ buildConsensusGenes <- function(matchedSigs, cancerAll, immuneFilter = NULL, str
 
 #' Combine Existing Signatures Ensuring Consistant Nomenclature
 #'
-#' \code{matchGeneSigs} Combines existing signatures and allows additional of a new signature.
+#' \code{matchGeneSigs} Combines existing signatures.
 #'
 #' @param methodSignatures raw gene signatures list generated from methodSignatures.R
 #'
@@ -442,4 +463,5 @@ matchGeneSigs <- function(methodSignatures) {
 
 .onLoad <- function(libname, pkgname) {
   utils::data("methodSignatures", package = pkgname, envir = parent.env(environment()))
+  utils::data("cancerAll", package = pkgname, envir = parent.env(environment()))
 }

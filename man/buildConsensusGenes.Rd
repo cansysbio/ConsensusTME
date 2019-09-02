@@ -5,13 +5,14 @@
 \title{Build Consensus Gene Supersets
 \code{buildConsensusGenes} Combines pre-processed signatures and filters to create curated gene sets.}
 \usage{
-buildConsensusGenes(matchedSigs, cancerAll, immuneFilter = NULL,
-  stromalFilter = NULL, immuneScore = TRUE)
+buildConsensusGenes(matchedSigs, consCancerType = cancerAll,
+  immuneFilter = NULL, stromalFilter = NULL, immuneScore = TRUE,
+  unfilteredGeneSet = NULL)
 }
 \arguments{
 \item{matchedSigs}{list of pre-processed signatures with consistant cell type nomenclature}
 
-\item{cancerAll}{TCGA cancer types to produce gene sets for}
+\item{consCancerType}{TCGA cancer types to produce gene sets for if no cancer type is specified Default: All TCGA cancer types.}
 
 \item{immuneFilter}{list of genes to filter immune gene sets by. If \code{NULL} - \code{methodSignatures$ImmuneGenes}
 is used (list of immune genes with negative correlation with tumour purity for each tcga cancer type).
@@ -23,6 +24,9 @@ is used (list of ESTIMATE's stromal genes with negative correlation with tumour 
 
 \item{immuneScore}{logical, when \code{TRUE} (default) an Immune Score is produced representing overall
 level of immune infiltration for each sample.}
+
+\item{unfilteredGeneSet}{logical, include geneset without cancer specific filtering. If left empty & more than one cancer type has been
+specified defaults to \code{TRUE} otherwise defaults to \code{FALSE}.}
 }
 \value{
 returns consensusGeneSets

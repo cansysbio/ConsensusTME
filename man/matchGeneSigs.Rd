@@ -13,5 +13,5 @@ matchGeneSigs(methodSignatures)
 returns a list with curated signatures ready to be combined
 }
 \description{
-\code{matchGeneSigs} Combines existing signatures and allows additional of a new signature.
+\code{matchGeneSigs} Combines existing signatures.
 }
