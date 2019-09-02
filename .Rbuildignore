@@ -1,0 +1,6 @@
+^data-raw$
+^.*\.Rproj$
+^\.Rproj\.user$
+^LICENSE\.md$
+^Overview\.png$
+^Gene_signatures$
