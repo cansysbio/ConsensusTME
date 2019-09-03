@@ -2,6 +2,7 @@
 
 export(buildConsensusGenes)
 export(cancerAll)
+export(consensusGeneSets)
 export(consensusTMEAnalysis)
 export(geneSetEnrichment)
 export(matchGeneSigs)

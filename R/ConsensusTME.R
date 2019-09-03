@@ -43,6 +43,19 @@ NULL
 #' @export
 "cancerAll"
 
+#' Consensus TME Gene Sets
+#'
+#' Preprocessed ConsensusTME gene sets for each of the TCGA cancer types
+#'
+#' @docType data
+#'
+#' @usage data(consensusGeneSets)
+#'
+#' @description list of genes for each cell type for each cancer type
+#'
+#' @export
+"consensusGeneSets"
+
 #' Run ConsensusTME Cell Type Estimation
 #' \code{consensusTMEAnalysis} takes bulk tumour gene expression data and returns
 #' cell type specific enrichment scores for each sample
@@ -464,4 +477,5 @@ matchGeneSigs <- function(methodSignatures) {
 .onLoad <- function(libname, pkgname) {
   utils::data("methodSignatures", package = pkgname, envir = parent.env(environment()))
   utils::data("cancerAll", package = pkgname, envir = parent.env(environment()))
+  utils::data("consensusGeneSets", package = pkgname, envir = parent.env(environment()))
 }

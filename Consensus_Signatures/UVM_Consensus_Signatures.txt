@@ -1,0 +1,4 @@
+"B_cells"	"Cytotoxic_cells"	"Dendritic_cells"	"Eosinophils"	"Macrophages"	"Mast_cells"	"NK_cells"	"Neutrophils"	"T_cells_CD4"	"T_cells_CD8"	"T_cells_gamma_delta"	"T_regulatory_cells"	"Macrophages_M1"	"Macrophages_M2"	"Endothelial"	"Fibroblasts"	"Monocytes"	"Plasma_cells"	"Immune_Score"
+""	""	""	""	""	""	"SERPINB9"	"PDE4B"	""	""	""	""	""	""	"EMCN"	""	""	""	"PDE4B"
+""	""	""	""	""	""	""	"VNN2"	""	""	""	""	""	""	""	""	""	""	"SERPINB9"
+""	""	""	""	""	""	""	""	""	""	""	""	""	""	""	""	""	""	"VNN2"

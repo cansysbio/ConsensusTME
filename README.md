@@ -33,13 +33,13 @@ Example shows running Consensus<sup>TME</sup> for ovarian samples where `bulkExp
 with [HUGO gene symbols](https://www.genenames.org/) as row names.
 
 Currently Consensus<sup>TME</sup> can be run for the following
-[TCGA cancer types](https://gdc.cancer.gov/resources-tcga-users/tcga-code-tables/tcga-study-abbreviations) accessible through `ConsensusTME::cancerAll`:
+[TCGA cancer types](https://gdc.cancer.gov/resources-tcga-users/tcga-code-tables/tcga-study-abbreviations) viewable through `ConsensusTME::cancerAll`:
 
 ```r
 ACC BLCA BRCA CESC CHOL COAD DLBC ESCA GBM HNSC KICH KIRC KIRP LGG LIHC LUAD
 LUSC MESO OV PAAD PCPG PRAD READ SARC SKCM STAD TGCT THCA THYM UCEC UCS UVM
 ```
-Consensus<sup>TME</sup> gene sets can also be run with the following statistical frameworks:
+The `statMethod` argument gives the option to run Consensus<sup>TME</sup> gene sets with the following statistical frameworks:
 
 ```r
 ssgsea singScore gsva plage plage zscore
@@ -60,6 +60,8 @@ ConsensusTME::geneSetEnrichment(bulkExpMatrix, bindeaGeneSet)
 ### Generate Consensus<sup>TME</sup> Gene Sets
 
 Consensus<sup>TME</sup> gene sets can be generated for other uses. <b>N.B.</b> These gene sets are curated to be good signatures for immune cells within the tumour microenvironment. For immune cells in a different biological context other signatures may be more appropriate.
+
+Pre-processed Consensus<sup>TME</sup> gene sets can  be accessed with `ConsensusTME::consensusGeneSets`
 
 ```r
 rawMethodSignatures <- ConsensusTME::methodSignatures
