@@ -27,7 +27,7 @@ library(ConsensusTME)
 
 bulkExpMatrix <- as.matrix(read.delim(bulkGeneExpression.txt, row.names = 1))
 
-ConsensusTME::consensusTMEAnalysis(bulkExpMatrix, cancer = "OV", statMethod = "ssgea")
+ConsensusTME::consensusTMEAnalysis(bulkExpMatrix, cancer = "OV", statMethod = "ssgsea")
 ```
 Example shows running Consensus<sup>TME</sup> for ovarian samples where `bulkExpMatrix` is a numerical matrix
 with [HUGO gene symbols](https://www.genenames.org/) as row names.
