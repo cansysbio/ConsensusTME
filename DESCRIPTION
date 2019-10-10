@@ -18,7 +18,7 @@ Description: ConsensusTME is a consensus based approach to generating cancer
 Depends: R (>= 3.5.0)
 Remotes: 
     bioc::GSEABase,
-    bioc::GSVA
+    bioc::GSVA,
     bioc::singscore
 License: GPL-3
 BugReports: https://github.com/cansysbio/ConsensusTME/issues
