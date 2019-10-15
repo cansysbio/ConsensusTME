@@ -16,14 +16,11 @@ Description: ConsensusTME is a consensus based approach to generating cancer
     relative quantities of cell types across multiple samples.
     This requires a bulk tumour gene expression profile as an input.
 Depends: R (>= 3.5.0)
+biocViews:
 Imports:
     GSEABase,
     GSVA,
     singscore
-Remotes: 
-    bioc::GSEABase,
-    bioc::GSVA,
-    bioc::singscore
 License: GPL-3
 BugReports: https://github.com/cansysbio/ConsensusTME/issues
 Encoding: UTF-8
