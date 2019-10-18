@@ -225,7 +225,7 @@ geneSetEnrichment <- function(bulkExp, signatures, statMethod = c("ssgsea", "gsv
 buildConsensusGenes <- function(matchedSigs, consCancerType = cancerAll, immuneFilter = NULL, stromalFilter = NULL, immuneScore = TRUE,
                                 unfilteredGeneSet = NULL) {
 
-  consCancerType <- match.arg(consCancerType, cancerAll, several.ok = TRUE)
+  consCancerType <- match.arg(consCancerType, c(cancerAll, "Unfiltered"), several.ok = TRUE)
 
   if (is.null(immuneFilter)) {
     immuneFilter <- methodSignatures$ImmuneGenes
