@@ -64,7 +64,7 @@ NULL
 #' as column names.
 #' @param cancerType string passed to indicate which TCGA cancer type samples are most similar to. \bold{N.B} samples of different cancer types should be run seperately.
 #' Available cancer types: \code{"ACC", "BLCA", "BRCA", "CESC", "CHOL", "COAD", "DLBC", "ESCA", "GBM", "HNSC", "KICH", "KIRC", "KIRP","LGG", "LIHC", "LUAD", "LUSC", "MESO",
-#' "OV", "PAAD", "PCPG", "PRAD", "READ", "SARC", "SKCM", "STAD", "TGCT", "THCA", "THYM", "UCEC", "UCS", "UVM"}.
+#' "OV", "PAAD", "PCPG", "PRAD", "READ", "SARC", "SKCM", "STAD", "TGCT", "THCA", "THYM", "UCEC", "UCS", "UVM", "Unfiltered"}.
 #' @param statMethod statistical framework to be used in generating gene set enrichment scores.
 #' These mirror the parameter options of \code{GSVA::gsva()} with the exception of \code{singScore}.
 #' which leverages \code{singscore::multiScore()}. Default: \code{ssgsea}
@@ -83,10 +83,13 @@ NULL
 #' @return returns estimation of cell type abundance for each sample in the bulk tumour gene expression matrix
 #' @export
 
-consensusTMEAnalysis <- function(bulkExp, cancerType, statMethod = c("ssgsea", "gsva", "plage","zscore", "singScore"),
+consensusTMEAnalysis <- function(bulkExp, cancerType = NULL, statMethod = c("ssgsea", "gsva", "plage","zscore", "singScore"),
                          singScoreDisp = FALSE, immuneScore = TRUE, excludeCells = NULL,
                          parallel.sz = 0, parallel.type = "SOCK") {
-
+  
+  if(is.null(cancerType)) {
+    stop(paste0("argument \"cancerType\" is missing and should be one of: ", paste0(cancerAll, collapse = ", "), ", Unfiltered"))
+  }
   cancerType <- match.arg(cancerType, c(cancerAll, "Unfiltered"))
   statMethod <- match.arg(statMethod)
   sampleSize <- dim(bulkExp)[2]
@@ -222,7 +225,7 @@ geneSetEnrichment <- function(bulkExp, signatures, statMethod = c("ssgsea", "gsv
 #' @return returns consensusGeneSets
 #' @export
 
-buildConsensusGenes <- function(matchedSigs, consCancerType = cancerAll, immuneFilter = NULL, stromalFilter = NULL, immuneScore = TRUE,
+buildConsensusGenes <- function(matchedSigs, consCancerType = c(cancerAll, "Unfiltered"), immuneFilter = NULL, stromalFilter = NULL, immuneScore = TRUE,
                                 unfilteredGeneSet = NULL) {
 
   consCancerType <- match.arg(consCancerType, c(cancerAll, "Unfiltered"), several.ok = TRUE)
@@ -251,6 +254,9 @@ buildConsensusGenes <- function(matchedSigs, consCancerType = cancerAll, immuneF
   immuneCells <- cellTypes[!cellTypes %in% stromalCells]
 
   consensusGenes <- lapply(consCancerType, function(canc) {
+    if (canc == "Unfiltered") {
+      return(consensusAll)
+    }
     immuneGenes <- immuneFilter[immuneFilter$Cancer == canc, 1]
     stromalGenes <- stromalFilter[stromalFilter$Cancer == canc, 1]
     filteredSigs <- lapply(cellTypes, function(cell){
@@ -276,13 +282,10 @@ buildConsensusGenes <- function(matchedSigs, consCancerType = cancerAll, immuneF
 
   # Add Unfiltered Set of Genes If Required
 
-  if (is.null(unfilteredGeneSet)) {
-    unfilteredGeneSet <- length(consCancerType) > 1
-  }
-
-  if (unfilteredGeneSet) {
+  if (is.null(unfilteredGeneSet) & length(consCancerType) > 1 & !"Unfiltered" %in% names(consensusGenes)) {
     consensusGenes$Unfiltered <- consensusAll
   }
+
 
   return(consensusGenes)
 
