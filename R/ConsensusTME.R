@@ -255,6 +255,7 @@ buildConsensusGenes <- function(matchedSigs, consCancerType = c(cancerAll, "Unfi
 
   consensusGenes <- lapply(consCancerType, function(canc) {
     if (canc == "Unfiltered") {
+      consensusAll$Immune_Score <- sort(unique(unlist(consensusAll)))
       return(consensusAll)
     }
     immuneGenes <- immuneFilter[immuneFilter$Cancer == canc, 1]
