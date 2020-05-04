@@ -77,15 +77,13 @@ NULL
 #' This requires to previously load either the parallel or the snow library. If parallel is loaded and this argument is left with its default value (parallel.sz = 0)
 #' then it will use all available core processors unless this is set with a smaller number.
 #' If snow is loaded then this must be set to a positive integer number that specifies the number of processors to employ in the parallel calculation.
-#' @param parallel.type parameter passed to \code{GSVA::gsva()} - Type of cluster architecture when using snow. \code{"SOCK"} - works on any system (including Windows).
-#' \code{"FORK"} -  faster but should be only used for POSIX systems (Mac, Linux, Unix, BSD).
 #'
 #' @return returns estimation of cell type abundance for each sample in the bulk tumour gene expression matrix
 #' @export
 
 consensusTMEAnalysis <- function(bulkExp, cancerType = NULL, statMethod = c("ssgsea", "gsva", "plage","zscore", "singScore"),
                          singScoreDisp = FALSE, immuneScore = TRUE, excludeCells = NULL,
-                         parallel.sz = 0, parallel.type = "SOCK") {
+                         parallel.sz = 0) {
   
   if(is.null(cancerType)) {
     stop(paste0("argument \"cancerType\" is missing and should be one of: ", paste0(cancerAll, collapse = ", "), ", Unfiltered"))
@@ -152,15 +150,13 @@ consensusTMEAnalysis <- function(bulkExp, cancerType = NULL, statMethod = c("ssg
 #' This requires to previously load either the parallel or the snow library. If parallel is loaded and this argument is left with its default value (parallel.sz = 0)
 #' then it will use all available core processors unless this is set with a smaller number.
 #' If snow is loaded then this must be set to a positive integer number that specifies the number of processors to employ in the parallel calculation.
-#' @param parallel.type parameter for \code{GSVA::gsva()} - Type of cluster architecture when using snow. \code{"SOCK"} - works on any system (including Windows).
-#' \code{"FORK"} -  faster but should be only used for POSIX systems (Mac, Linux, Unix, BSD).
 #'
 #' @return returns a list with curated signatures ready to be combined
 #' @export
 
 
 geneSetEnrichment <- function(bulkExp, signatures, statMethod = c("ssgsea", "gsva", "plage", "zscore", "singScore"), singScoreDisp = FALSE,
-                              parallel.sz = 0, parallel.type = "SOCK") {
+                              parallel.sz = 0) {
 
   statMethod <- match.arg(statMethod)
 
@@ -202,7 +198,7 @@ geneSetEnrichment <- function(bulkExp, signatures, statMethod = c("ssgsea", "gsv
     consensusEstimates <- singOut
   } else if (statMethod %in% c("ssgsea", "gsva", "plage", "zscore")) {
     consensusEstimates <- GSVA::gsva(expr = bulkExp, gset.idx.list = signatures, method = statMethod, min.sz = 0, max.sz = dim(bulkExp)[1],
-                               parallel.type = parallel.type, parallel.sz = parallel.sz, ssgsea.norm = TRUE)
+                                     parallel.sz = parallel.sz, ssgsea.norm = TRUE)
   }
 }
 
@@ -255,7 +251,9 @@ buildConsensusGenes <- function(matchedSigs, consCancerType = c(cancerAll, "Unfi
 
   consensusGenes <- lapply(consCancerType, function(canc) {
     if (canc == "Unfiltered") {
-      consensusAll$Immune_Score <- sort(unique(unlist(consensusAll)))
+      if (immuneScore) {
+        consensusAll$Immune_Score <- sort(unique(unlist(consensusAll)))
+      }
       return(consensusAll)
     }
     immuneGenes <- immuneFilter[immuneFilter$Cancer == canc, 1]
