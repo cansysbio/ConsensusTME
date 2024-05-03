@@ -198,15 +198,15 @@ geneSetEnrichment <- function(bulkExp, signatures, statMethod = c("ssgsea", "gsv
     consensusEstimates <- singOut
   } else if (statMethod %in% c("ssgsea", "gsva", "plage", "zscore")) {
     if(packageVersion("GSVA") >= "1.50.0"){
-      # Legacy GSVA function was depreciated in version 1.50 and entirely removed in version 1.52.
+      # Legacy GSVA function was depreciated in version 1.50 and entirely removed in version 1.52. (minSize must be 1 or greater)
       if (statMethod=="ssgsea") {
-        gsvapar <- GSVA::ssgseaParam(exprData = bulkExp, geneSets = signatures, minSize = 0, maxSize = dim(bulkExp)[1], normalize = TRUE)
+        gsvapar <- GSVA::ssgseaParam(exprData = bulkExp, geneSets = signatures, minSize = 1, maxSize = dim(bulkExp)[1], normalize = TRUE)
       } else if (statMethod=="gsva") {
-        gsvapar <- GSVA::gsvaParam(exprData = bulkExp, geneSets = signatures, minSize = 0, maxSize = dim(bulkExp)[1])
+        gsvapar <- GSVA::gsvaParam(exprData = bulkExp, geneSets = signatures, minSize = 1, maxSize = dim(bulkExp)[1])
       } else if (statMethod=="plage") {
-        gsvapar <- GSVA::plageParam(exprData = bulkExp, geneSets = signatures, minSize = 0, maxSize = dim(bulkExp)[1])
+        gsvapar <- GSVA::plageParam(exprData = bulkExp, geneSets = signatures, minSize = 1, maxSize = dim(bulkExp)[1])
       } else {
-        gsvapar <- GSVA::zscoreParam(exprData = bulkExp, geneSets = signatures, minSize = 0, maxSize = dim(bulkExp)[1])
+        gsvapar <- GSVA::zscoreParam(exprData = bulkExp, geneSets = signatures, minSize = 1, maxSize = dim(bulkExp)[1])
       }
       consensusEstimates <- GSVA::gsva(gsvapar)
     } else {
